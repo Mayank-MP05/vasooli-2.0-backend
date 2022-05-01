@@ -1,13 +1,15 @@
 const express = require("express");
-
+const jwt = require("jsonwebtoken");
+const cors = require("cors");
 const applySwaggerUI = require("./config/swagger");
 const logger = require("./config/logger");
 
 const app = express();
+app.use(express.json());
+app.use(cors());
 const PORT = 8000;
 
 applySwaggerUI(app);
-
 
 /**
  * @swagger
@@ -35,6 +37,76 @@ app.get("/", (req, res) => {
  */
 app.get("/customers", (req, res) => {
   res.status(200).send("Customer results");
+});
+
+/**
+ * @swagger
+ * /customers:
+ *    put:
+ *      description: Use to return all customers
+ *    parameters:
+ *      - name: customer
+ *        in: query
+ *        description: Name of our customer
+ *        required: false
+ *        schema:
+ *          type: string
+ *          format: string
+ *    responses:
+ *      '201':
+ *        description: Successfully created user
+ */
+app.put("/customer", (req, res) => {
+  res.status(200).send("Successfully updated customer");
+});
+
+/**
+ * @swagger
+ * /login:
+ *    put:
+ *      description: login the existing user to system
+ *    parameters:
+ *      - username: user_one
+ *        in: query
+ *        description: Username to login
+ *        required: true
+ *        schema:
+ *          type: string
+ *          format: string *
+ *      - password: pass_one
+ *        in: query
+ *        description: Password to login
+ *        required: true
+ *        schema:
+ *          type: string
+ *          format: string
+ *    responses:
+ *      '201':
+ *        description: Successfully logged in user
+ */
+app.post("/login", (req, res) => {
+  res.status(200).send("Login Route");
+});
+
+/**
+ * @swagger
+ * /customers:
+ *    put:
+ *      description: Use to return all customers
+ *    parameters:
+ *      - name: customer
+ *        in: query
+ *        description: Name of our customer
+ *        required: false
+ *        schema:
+ *          type: string
+ *          format: string
+ *    responses:
+ *      '201':
+ *        description: Successfully created user
+ */
+app.put("/customer", (req, res) => {
+  res.status(200).send("Successfully updated customer");
 });
 
 /**
