@@ -1,0 +1,39 @@
+{"level":"info","message":"Hello World!","service":"user-service"}
+{"level":"info","message":"Hello World!","service":"user-service"}
+{"level":"info","message":"Hello World!","service":"user-service"}
+{"level":"info","message":"Hello World!","service":"user-service"}
+{"level":"info","message":"Hello World!","service":"user-service"}
+{"level":"info","message":"Hello World!","service":"user-service"}
+{"level":"info","message":"Hello World!","service":"user-service"}
+{"level":"warn","message":"Hello World!","service":"user-service"}
+{"level":"error","message":"Hello World!","service":"user-service"}
+{"level":"info","message":"info Hello World!","service":"user-service"}
+{"level":"warn","message":"warn Hello World!","service":"user-service"}
+{"level":"error","message":"error Hello World!","service":"user-service"}
+{"level":"info","message":"info Hello World!","service":"user-service"}
+{"level":"warn","message":"warn Hello World!","service":"user-service"}
+{"level":"error","message":"error Hello World!","service":"user-service"}
+{"level":"info","message":"info Hello World!","service":"user-service"}
+{"level":"debug","message":"debug Hello World!","service":"user-service"}
+{"level":"warn","message":"warn Hello World!","service":"user-service"}
+{"level":"error","message":"error Hello World!","service":"user-service"}
+{"level":"verbose","message":"error Hello World!","service":"user-service"}
+{"level":"silly","message":"error Hello World!","service":"user-service"}
+{"level":"info","message":"info Hello World!","service":"user-service"}
+{"level":"debug","message":"debug Hello World!","service":"user-service"}
+{"level":"warn","message":"warn Hello World!","service":"user-service"}
+{"level":"error","message":"error Hello World!","service":"user-service"}
+{"level":"verbose","message":"error Hello World!","service":"user-service"}
+{"level":"silly","message":"error Hello World!","service":"user-service"}
+{"level":"info","message":"info Hello World!","service":"user-service"}
+{"level":"debug","message":"debug Hello World!","service":"user-service"}
+{"level":"warn","message":"warn Hello World!","service":"user-service"}
+{"level":"error","message":"error Hello World!","service":"user-service"}
+{"level":"verbose","message":"error Hello World!","service":"user-service"}
+{"level":"silly","message":"error Hello World!","service":"user-service"}
+{"level":"info","message":"info Hello World!","service":"user-service"}
+{"level":"debug","message":"debug Hello World!","service":"user-service"}
+{"level":"warn","message":"warn Hello World!","service":"user-service"}
+{"level":"error","message":"error Hello World!","service":"user-service"}
+{"level":"verbose","message":"error Hello World!","service":"user-service"}
+{"level":"silly","message":"error Hello World!","service":"user-service"}

@@ -23,4 +23,4 @@ const applySwaggerUI = (app) => {
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 };
 
-module.exports = { applySwaggerUI };
+module.exports = applySwaggerUI;

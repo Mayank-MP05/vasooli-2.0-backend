@@ -1,11 +1,13 @@
 const express = require("express");
 
 const applySwaggerUI = require("./config/swagger");
+const logger = require("./config/logger");
 
 const app = express();
 const PORT = 8000;
 
 applySwaggerUI(app);
+
 
 /**
  * @swagger
@@ -18,6 +20,7 @@ applySwaggerUI(app);
  */
 app.get("/", (req, res) => {
   res.send("Hello World!");
+  logger.info("Hello World!");
 });
 
 // Routes
