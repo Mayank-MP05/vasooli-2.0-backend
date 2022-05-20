@@ -6,7 +6,11 @@ const cookieParser = require("cookie-parser");
 const applySwaggerUI = require("./config/swagger");
 const logger = require("./config/logger");
 const userRouter = require("./routes/user.routes");
-require("./config/mongo-db-connect");
+
+// Database Handlers
+const notifDB = require("./config/mongo-db-connect");
+const vasooliDB = require("./config/mysql-connect");
+
 const app = express();
 const PORT = 8000;
 
@@ -42,5 +46,5 @@ app.post("/login", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}`);
+  logger.debug(`Example app listening on port ${PORT}`);
 });

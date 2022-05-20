@@ -1,6 +1,7 @@
 const mysql = require("mysql2");
 const logger = require("./logger");
 
+logger.info("Connecting to MySQL instance ...");
 const connection = mysql.createPool({
   connectionLimit: 10,
   host: "localhost", // host for connection
@@ -12,13 +13,9 @@ const connection = mysql.createPool({
 
 if (connection) {
   // mysql is started && connected successfully.
-  logger.info("MySQL Connection successful!");
+  logger.info("Connection to MySQL DB - SUCCESSFUL!");
 } else {
-  logger.info("error occured while connecting");
+  logger.info("[MySQL]: Error occured while connecting");
 }
 
-connection.query("SELECT * from users", function (err, result) {
-  if (err) throw err;
-  logger.debug("Result: " + result);
-  logger.info("%O", result);
-});
+module.exports = connection;

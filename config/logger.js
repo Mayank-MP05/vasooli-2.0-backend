@@ -17,7 +17,7 @@ const logger = winston.createLogger({
       if (typeof info.message === "object") {
         info.message = JSON.stringify(info.message, null, 3);
       }
-      return info.message;
+      return `${info.timestamp} [${info.level}]: ${info.message}`;
     })
   ),
   defaultMeta: { service: "user-service" },
