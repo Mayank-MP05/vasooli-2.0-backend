@@ -16,7 +16,7 @@ const applySwaggerUI = (app) => {
       },
     },
     // ['.routes/*.js']
-    apis: ["server.js"],
+    apis: ["server.js", "./routes/*.js"],
   };
 
   const swaggerDocs = swaggerJsDoc(swaggerOptions);
