@@ -7,7 +7,13 @@ const myFormat = printf(({ level, message, timestamp }) => {
 });
 const logger = winston.createLogger({
   level: "silly",
-  format: combine(colorize(), timestamp(), winston.format.json(), myFormat),
+  format: combine(
+    colorize(),
+    timestamp(),
+    winston.format.json(),
+    myFormat,
+    format.splat(),
+  ),
   defaultMeta: { service: "user-service" },
   transports: [
     //
