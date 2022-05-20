@@ -103,12 +103,55 @@ userRouter.post("/login", (req, res) => {
  *          password:
  *            type: "string"
  *            example: "twopass"
+ *          fullName:
+ *            type: "string"
+ *            example: "User Two"
+ *          city:
+ *            type: "string"
+ *            example: "pune"
  *    responses:
  *      "200":
  *        description: "SignUp Success"
  */
 userRouter.post("/register", (req, res) => {
-  res.send("Register Route for user");
+  const { body } = req;
+  const { username, password, fullName, city } = body;
+  const user = { username, password };
+  const randomProfilePic = Math.floor(Math.random() * 9);
+  logger.debug("/user/register", body);
+
+  //TODO: Check if user exists in DB
+  vasooliDB.query(
+    "INSERT INTO users (email,password,profilePic,fullName, city) VALUES (?,?,?,?,?)",
+    [username, password, randomProfilePic, fullName, city],
+    (err, results) => {
+      logger.debug(results);
+      if (err) {
+        res.status(400).send({
+          message: "Something went wrong, Please try again",
+          success: false,
+          error: true,
+          ...err,
+        });
+      }
+
+      //TODO: Create JWT Token and Nullify the Password send it back
+      if (results && results.insertId) {
+        const accessToken = jwt.sign(user, "secret");
+        res.status(200).send({
+          message: "Account Successfully Created!!",
+          success: true,
+          error: false,
+          userId: results.insertId,
+          username,
+          token: accessToken,
+          profilePic: randomProfilePic,
+          fullName,
+          city,
+        });
+      }
+    }
+  );
 });
 
 /**
@@ -138,7 +181,7 @@ userRouter.post("/register", (req, res) => {
  *        description: "LogOut Success"
  */
 userRouter.post("/logout", (req, res) => {
-  res.send("Logout Route for user");
+  res.send("Logout successfull!");
 });
 
 /**
