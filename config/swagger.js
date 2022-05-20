@@ -7,12 +7,12 @@ const applySwaggerUI = (app) => {
     swaggerDefinition: {
       info: {
         version: "1.0.0",
-        title: "Customer API",
-        description: "Customer API Information",
+        title: "Vasooli API",
+        description: "Vasooli - Money Manager API Docs",
         contact: {
-          name: "Amazing Developer",
+          name: "mayank",
         },
-        servers: ["http://localhost:5000"],
+        servers: ["http://localhost:8000"],
       },
     },
     // ['.routes/*.js']

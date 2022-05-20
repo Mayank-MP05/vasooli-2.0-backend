@@ -23,28 +23,6 @@ applySwaggerUI(app);
 // import routes from routers
 app.use("/user", userRouter);
 
-/**
- * @swagger
- * /login:
- *    post:
- *      description: Use to return all customers
- *    parameters:
- *      - name: customer
- *        in: query
- *        description: Name of our customer
- *        required: false
- *        schema:
- *          type: string
- *          format: string
- *    responses:
- *      '201':
- *        description: Successfully created user
- */
-app.post("/login", (req, res) => {
-  logger.debug(req.body);
-  res.status(200).send("Login Route");
-});
-
 app.listen(PORT, () => {
   logger.debug(`Example app listening on port ${PORT}`);
 });
