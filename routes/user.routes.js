@@ -168,7 +168,7 @@ userRouter.post("/register", (req, res) => {
  *    parameters:
  *    - in: "path"
  *      name: "userId"
- *      description: "numeric userId in the DB" 
+ *      description: "numeric userId in the DB"
  *      required: true
  *      type: "integer"
  *      format: "int64"
@@ -200,9 +200,12 @@ userRouter.get("/logout/:id", (req, res) => {
  *      schema:
  *        type: "object"
  *        properties:
+ *          username:
+ *            type: "string"
+ *            example: "one@mail.com"
  *          fullName:
  *            type: "string"
- *            example: "user one"
+ *            example: "user oneMOD"
  *          profilePic:
  *            format: "int64"
  *            example: 6
@@ -215,7 +218,37 @@ userRouter.get("/logout/:id", (req, res) => {
  *        description: "UpdateProfile Success"
  */
 userRouter.post("/editProfile", (req, res) => {
-  res.send("editProfile Route for user");
+  const { body } = req;
+  const { username, fullName, city, profilePic } = body;
+  logger.debug("/user/register", body);
+
+  //TODO: DB Query to update the record
+  vasooliDB.query(
+    `UPDATE users
+    SET profilePic = ?,
+    fullName = ?,
+    city = ?
+    WHERE email = ?`,
+    [profilePic, fullName, city, username],
+    (err, results) => {
+      logger.debug(results);
+      if (err) {
+        res.status(400).send({
+          message: "Something went wrong, Please try again",
+          success: false,
+          error: true,
+          ...err,
+        });
+      }
+
+      res.status(200).send({
+        message: "Profile details updated successfully!!",
+        success: true,
+        error: false,
+        ...results,
+      });
+    }
+  );
 });
 
 module.exports = userRouter;
