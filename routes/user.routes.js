@@ -156,8 +156,8 @@ userRouter.post("/register", (req, res) => {
 
 /**
  * @swagger
- * /user/logout:
- *  post:
+ * /user/logout/{userId}:
+ *  get:
  *    tags:
  *    - "user"
  *    summary: "Logs Out the User"
@@ -166,22 +166,19 @@ userRouter.post("/register", (req, res) => {
  *    produces:
  *    - "application/json"
  *    parameters:
- *    - in: "body"
- *      name: "body"
- *      description: "user logout credentials"
+ *    - in: "path"
+ *      name: "userId"
+ *      description: "numeric userId in the DB" 
  *      required: true
- *      schema:
- *        type: "object"
- *        properties:
- *          username:
- *            type: "string"
- *            example: "one@gmail.com"
+ *      type: "integer"
+ *      format: "int64"
  *    responses:
  *      "200":
  *        description: "LogOut Success"
  */
-userRouter.post("/logout", (req, res) => {
-  res.send("Logout successfull!");
+userRouter.get("/logout/:id", (req, res) => {
+  const { id } = req.params;
+  res.send("Logout successfull! for user id: " + id);
 });
 
 /**
