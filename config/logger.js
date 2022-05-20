@@ -13,6 +13,12 @@ const logger = winston.createLogger({
     winston.format.json(),
     myFormat,
     format.splat(),
+    format.printf((info) => {
+      if (typeof info.message === "object") {
+        info.message = JSON.stringify(info.message, null, 3);
+      }
+      return info.message;
+    })
   ),
   defaultMeta: { service: "user-service" },
   transports: [
