@@ -1,7 +1,9 @@
 # API Endpoint Structure
 
 ### Swagger API Documentation
-!(API Documentation)[https://github.com/Mayank-MP05/vasooli-2.0-backend/blob/main/docs/swagger.png?raw=true]
+
+![API Documentation](https://github.com/Mayank-MP05/vasooli-2.0-backend/blob/main/docs/swagger.png?raw=true)
+
 ### User and Auth Routes
 
 `/user/login`
