@@ -3,6 +3,7 @@ const logger = require("../config/logger");
 const requestLogger = require("../middleware/request-logger");
 const vasooliRouter = express.Router();
 const vasooliDB = require("../config/mysql-connect");
+const createNotification = require("../services/notification.service");
 
 /**
  * @swagger
@@ -60,11 +61,11 @@ vasooliRouter.post("/create", (req, res) => {
         });
         return;
       }
-      const requestedToUser = resultUser[0].userId;
+      const requestedFromUserId = resultUser[0].userId;
       //TODO: Push the new vasooli record to DB
       vasooliDB.query(
         "INSERT INTO vasoolis (userId,  amount, category, date, description,requestedTo, status) VALUES (?,  ?, ?, ?, ?, ?, 'PENDING')",
-        [userId, amount, category, date, description, requestedToUser],
+        [userId, amount, category, date, description, requestedFromUserId],
         (err, results) => {
           logger.info("%o %o", err, results);
           if (err) {
@@ -80,6 +81,14 @@ vasooliRouter.post("/create", (req, res) => {
               success: true,
               error: false,
               ...results,
+            });
+            //TODO: Send notification to requestedFromUser
+            createNotification({
+              priority: 1,
+              content: `${resultUser[0].email} has requested you to pay ₹${amount}`,
+              userId: requestedFromUserId,
+              readStatus: false,
+              timestamp: new Date(),
             });
           }
         }
@@ -184,6 +193,9 @@ vasooliRouter.get("/read/:userId", (req, res) => {
  *          status:
  *            type: "string"
  *            example: "APPROVED"
+ *          statusUpdated:
+ *            type: "bool"
+ *            example: false
  *    responses:
  *      "200":
  *        description: "update vasooli by vasooliId success!!"
@@ -193,8 +205,16 @@ vasooliRouter.put("/update/:vasooliId", (req, res) => {
   const { vasooliId: vasooliIdX } = req.params;
   const vasooliId = parseInt(vasooliIdX);
 
-  const { userId, requestedTo, amount, category, date, description, status } =
-    body;
+  const {
+    userId,
+    requestedTo,
+    amount,
+    category,
+    date,
+    description,
+    status,
+    statusUpdated,
+  } = body;
   vasooliDB.query(
     "SELECT * from users where email = ?",
     [requestedTo],
@@ -207,7 +227,7 @@ vasooliRouter.put("/update/:vasooliId", (req, res) => {
         });
         return;
       }
-      const requestedToUser = resultUser[0].userId;
+      const requestedFromUserId = resultUser[0].userId;
       //TODO: Update the vasooli record to DB
       vasooliDB.query(
         `UPDATE vasoolis
@@ -217,7 +237,7 @@ vasooliRouter.put("/update/:vasooliId", (req, res) => {
           category,
           date,
           description,
-          requestedToUser,
+          requestedFromUserId,
           status,
           vasooliId,
         ],
@@ -237,6 +257,25 @@ vasooliRouter.put("/update/:vasooliId", (req, res) => {
               error: false,
               ...results,
             });
+            //TODO: Send notification to requestedFromUser on Status update
+            if (statusUpdated) {
+              let content = ``;
+              const payee = resultUser[0].email;
+              if (status === "APPROVED") {
+                content = `${payee} has approved your payment of ₹${amount}`;
+              } else if (status === "REJECTED") {
+                content = `${payee} has rejected your payment of ₹${amount}`;
+              } else if (status === "PAID") {
+                content = `${payee} has paid you ₹${amount}`;
+              }
+              createNotification({
+                priority: 1,
+                content,
+                userId: requestedFromUserId,
+                readStatus: false,
+                timestamp: new Date(),
+              });
+            }
           }
         }
       );
