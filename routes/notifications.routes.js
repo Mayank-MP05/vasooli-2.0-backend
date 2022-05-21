@@ -4,6 +4,7 @@ const notifRouter = express.Router();
 
 // Database Connection Handlers
 const mongoDBConnector = require("../config/mongo-db-connect");
+
 /**
  * @swagger
  * /notif/read/{userId}:

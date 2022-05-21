@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 const notifDB = require("../config/mongo-db-connect");
 const vasooliDB = require("../config/mysql-connect");
 const requestLogger = require("../middleware/request-logger");
+const createNotification = require("../services/notification.service");
 
 /**
  * @swagger
@@ -138,6 +139,12 @@ userRouter.post("/register", requestLogger, (req, res) => {
       //TODO: Create JWT Token and Nullify the Password send it back
       if (results && results.insertId) {
         const accessToken = jwt.sign(user, "secret");
+        //TODO: Send notifications as Joining
+        createNotification({
+          priority: 2,
+          content: `${username} has just joined vasooli money manager app!`,
+          timestamp: new Date(),
+        });
         res.status(200).send({
           message: "Account Successfully Created!!",
           success: true,
