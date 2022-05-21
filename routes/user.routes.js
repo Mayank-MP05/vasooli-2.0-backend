@@ -40,6 +40,7 @@ const createNotification = require("../services/notification.service");
 userRouter.post("/login", requestLogger, (req, res) => {
   const { body } = req;
   const { username, password } = body;
+  const userForToken = { username, password };
 
   //TODO: Check if user exists in DB
   vasooliDB.query(
@@ -58,22 +59,22 @@ userRouter.post("/login", requestLogger, (req, res) => {
 
       //TODO: Check if password is correct
       const [user, ...rest] = results;
-      if (user.password !== password) {
-        res.status(401).send({
-          message: "Password you entered is Incorrect",
-          success: false,
-          error: true,
-        });
-      } else {
+      if (user && user.password && user.password === password) {
         //TODO: Create JWT Token and Nullify the Password send it back
         user.password = null;
-        const accessToken = jwt.sign(user, "secret");
+        const accessToken = jwt.sign(userForToken, "secret");
         res.status(200).send({
           message: "Successfully Logged In",
           success: true,
           error: false,
           token: accessToken,
           ...user,
+        });
+      } else {
+        res.status(401).send({
+          message: "Password you entered is Incorrect",
+          success: false,
+          error: true,
         });
       }
     }
