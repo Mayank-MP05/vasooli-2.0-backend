@@ -64,7 +64,7 @@ const vasooliDB = require("../config/mysql-connect");
  *        in: header
  *        name: access_token
  */
-txnRouter.post("/create", requestLogger, (req, res) => {
+txnRouter.post("/create", requestLogger, authenticate, (req, res) => {
   const { body } = req;
   const { userId, type, amount, category, date, description } = body;
   //TODO: Push the new record txn data to DB
@@ -116,7 +116,7 @@ txnRouter.post("/create", requestLogger, (req, res) => {
  *      "200":
  *        description: "Read all txn by userId success!!"
  */
-txnRouter.get("/read/:userId", (req, res) => {
+txnRouter.get("/read/:userId", requestLogger, authenticate, (req, res) => {
   const { userId: userIdX } = req.params;
   const userId = parseInt(userIdX);
 
@@ -193,7 +193,7 @@ txnRouter.get("/read/:userId", (req, res) => {
  *      "200":
  *        description: "update txn by txnId success!!"
  */
-txnRouter.put("/update/:txnId", (req, res) => {
+txnRouter.put("/update/:txnId", requestLogger, authenticate, (req, res) => {
   const { txnId: txnIdX } = req.params;
   const txnId = parseInt(txnIdX);
   const { body } = req;
@@ -247,7 +247,7 @@ txnRouter.put("/update/:txnId", (req, res) => {
  *      "200":
  *        description: "Delete Single Txn success!!"
  */
-txnRouter.delete("/delete/:txnId", (req, res) => {
+txnRouter.delete("/delete/:txnId", requestLogger, authenticate, (req, res) => {
   const { txnId: txnIdX } = req.params;
   const txnId = parseInt(txnIdX);
 

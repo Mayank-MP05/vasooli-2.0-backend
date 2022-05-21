@@ -129,7 +129,7 @@ vasooliRouter.post("/create", requestLogger, authenticate, (req, res) => {
  *      "200":
  *        description: "Read all Vasooli by userId success!!"
  */
-vasooliRouter.get("/read/:userId", (req, res) => {
+vasooliRouter.get("/read/:userId", requestLogger, authenticate, (req, res) => {
   const { userId: userIdX } = req.params;
   const userId = parseInt(userIdX);
 
@@ -214,88 +214,93 @@ vasooliRouter.get("/read/:userId", (req, res) => {
  *      "200":
  *        description: "update vasooli by vasooliId success!!"
  */
-vasooliRouter.put("/update/:vasooliId", (req, res) => {
-  const { body } = req;
-  const { vasooliId: vasooliIdX } = req.params;
-  const vasooliId = parseInt(vasooliIdX);
+vasooliRouter.put(
+  "/update/:vasooliId",
+  requestLogger,
+  authenticate,
+  (req, res) => {
+    const { body } = req;
+    const { vasooliId: vasooliIdX } = req.params;
+    const vasooliId = parseInt(vasooliIdX);
 
-  const {
-    userId,
-    requestedTo,
-    amount,
-    category,
-    date,
-    description,
-    status,
-    statusUpdated,
-  } = body;
-  vasooliDB.query(
-    "SELECT * from users where email = ?",
-    [requestedTo],
-    (errUser, resultUser) => {
-      if (errUser || resultUser.length === 0) {
-        res.status(400).json({
-          error: true,
-          success: false,
-          error: "Requested user not found",
-        });
-        return;
-      }
-      const requestedFromUserId = resultUser[0].userId;
-      //TODO: Update the vasooli record to DB
-      vasooliDB.query(
-        `UPDATE vasoolis
+    const {
+      userId,
+      requestedTo,
+      amount,
+      category,
+      date,
+      description,
+      status,
+      statusUpdated,
+    } = body;
+    vasooliDB.query(
+      "SELECT * from users where email = ?",
+      [requestedTo],
+      (errUser, resultUser) => {
+        if (errUser || resultUser.length === 0) {
+          res.status(400).json({
+            error: true,
+            success: false,
+            error: "Requested user not found",
+          });
+          return;
+        }
+        const requestedFromUserId = resultUser[0].userId;
+        //TODO: Update the vasooli record to DB
+        vasooliDB.query(
+          `UPDATE vasoolis
         SET amount = ?, category = ?, date = ?, description = ?, requestedTo = ?, status = ? WHERE vasooliId = ?`,
-        [
-          amount,
-          category,
-          date,
-          description,
-          requestedFromUserId,
-          status,
-          vasooliId,
-        ],
-        (err, results) => {
-          logger.info("%o %o", err, results);
-          if (err) {
-            res.status(500).send({
-              message: "Error in updating vasooli record",
-              success: false,
-              error: true,
-              ...err,
-            });
-          } else {
-            res.status(200).send({
-              message: "Vasooli record updated successfully",
-              success: true,
-              error: false,
-              ...results,
-            });
-            //TODO: Send notification to requestedFromUser on Status update
-            if (statusUpdated) {
-              let content = ``;
-              const payee = resultUser[0].email;
-              if (status === "APPROVED") {
-                content = `${payee} has approved your payment of ₹${amount}`;
-              } else if (status === "REJECTED") {
-                content = `${payee} has rejected your payment of ₹${amount}`;
-              } else if (status === "PAID") {
-                content = `${payee} has paid you ₹${amount}`;
-              }
-              createNotification({
-                priority: 1,
-                content,
-                userId: requestedFromUserId,
-                readStatus: false,
-                timestamp: new Date(),
+          [
+            amount,
+            category,
+            date,
+            description,
+            requestedFromUserId,
+            status,
+            vasooliId,
+          ],
+          (err, results) => {
+            logger.info("%o %o", err, results);
+            if (err) {
+              res.status(500).send({
+                message: "Error in updating vasooli record",
+                success: false,
+                error: true,
+                ...err,
               });
+            } else {
+              res.status(200).send({
+                message: "Vasooli record updated successfully",
+                success: true,
+                error: false,
+                ...results,
+              });
+              //TODO: Send notification to requestedFromUser on Status update
+              if (statusUpdated) {
+                let content = ``;
+                const payee = resultUser[0].email;
+                if (status === "APPROVED") {
+                  content = `${payee} has approved your payment of ₹${amount}`;
+                } else if (status === "REJECTED") {
+                  content = `${payee} has rejected your payment of ₹${amount}`;
+                } else if (status === "PAID") {
+                  content = `${payee} has paid you ₹${amount}`;
+                }
+                createNotification({
+                  priority: 1,
+                  content,
+                  userId: requestedFromUserId,
+                  readStatus: false,
+                  timestamp: new Date(),
+                });
+              }
             }
           }
-        }
-      );
-    }
-  );
-});
+        );
+      }
+    );
+  }
+);
 
 /**
  * @swagger
@@ -321,32 +326,37 @@ vasooliRouter.put("/update/:vasooliId", (req, res) => {
  *      "200":
  *        description: "Delete Single Vasooli Done!!"
  */
-vasooliRouter.delete("/delete/:vasooliId", (req, res) => {
-  const { vasooliId: vasooliIdX } = req.params;
-  const vasooliId = parseInt(vasooliIdX);
+vasooliRouter.delete(
+  "/delete/:vasooliId",
+  requestLogger,
+  authenticate,
+  (req, res) => {
+    const { vasooliId: vasooliIdX } = req.params;
+    const vasooliId = parseInt(vasooliIdX);
 
-  vasooliDB.query(
-    "DELETE FROM vasoolis WHERE vasooliId = ?",
-    [vasooliId],
-    (err, results) => {
-      logger.info("%o %o", err, results);
-      if (err) {
-        res.status(500).send({
-          message: "Error in deleting vasooli record",
-          success: false,
-          error: true,
-          ...err,
-        });
-      } else {
-        res.status(200).send({
-          message: "Vasooli record deleted successfully",
-          success: true,
-          error: false,
-          ...results,
-        });
+    vasooliDB.query(
+      "DELETE FROM vasoolis WHERE vasooliId = ?",
+      [vasooliId],
+      (err, results) => {
+        logger.info("%o %o", err, results);
+        if (err) {
+          res.status(500).send({
+            message: "Error in deleting vasooli record",
+            success: false,
+            error: true,
+            ...err,
+          });
+        } else {
+          res.status(200).send({
+            message: "Vasooli record deleted successfully",
+            success: true,
+            error: false,
+            ...results,
+          });
+        }
       }
-    }
-  );
-});
+    );
+  }
+);
 
 module.exports = vasooliRouter;
