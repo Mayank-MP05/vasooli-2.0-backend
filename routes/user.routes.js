@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 // Database Connection Handlers
 const notifDB = require("../config/mongo-db-connect");
 const vasooliDB = require("../config/mysql-connect");
+const requestLogger = require("../middleware/request-logger");
 
 /**
  * @swagger
@@ -35,16 +36,16 @@ const vasooliDB = require("../config/mysql-connect");
  *      "200":
  *        description: "Login Success"
  */
-userRouter.post("/login", (req, res) => {
+userRouter.post("/login", requestLogger, (req, res) => {
   const { body } = req;
   const { username, password } = body;
-  logger.debug({ username, password });
 
   //TODO: Check if user exists in DB
   vasooliDB.query(
     "SELECT * FROM users WHERE email = ?",
     [username],
     (err, results) => {
+      logger.info("%o %o", err, results);
       if (err || results.length === 0) {
         res.status(400).send({
           message: "User do not exist in our system",
@@ -113,19 +114,18 @@ userRouter.post("/login", (req, res) => {
  *      "200":
  *        description: "SignUp Success"
  */
-userRouter.post("/register", (req, res) => {
+userRouter.post("/register", requestLogger, (req, res) => {
   const { body } = req;
   const { username, password, fullName, city } = body;
   const user = { username, password };
   const randomProfilePic = Math.floor(Math.random() * 9);
-  logger.debug("/user/register", body);
 
   //TODO: Check if user exists in DB
   vasooliDB.query(
     "INSERT INTO users (email,password,profilePic,fullName, city) VALUES (?,?,?,?,?)",
     [username, password, randomProfilePic, fullName, city],
     (err, results) => {
-      logger.debug(results);
+      logger.info("%o %o", err, results);
       if (err) {
         res.status(400).send({
           message: "Something went wrong, Please try again",
@@ -176,7 +176,7 @@ userRouter.post("/register", (req, res) => {
  *      "200":
  *        description: "LogOut Success"
  */
-userRouter.get("/logout/:id", (req, res) => {
+userRouter.get("/logout/:id", requestLogger, (req, res) => {
   const { id } = req.params;
   res.send("Logout successfull! for user id: " + id);
 });
@@ -217,10 +217,9 @@ userRouter.get("/logout/:id", (req, res) => {
  *      "200":
  *        description: "UpdateProfile Success"
  */
-userRouter.post("/editProfile", (req, res) => {
+userRouter.post("/editProfile", requestLogger, (req, res) => {
   const { body } = req;
   const { username, fullName, city, profilePic } = body;
-  logger.debug("/user/register", body);
 
   //TODO: DB Query to update the record
   vasooliDB.query(
@@ -231,7 +230,7 @@ userRouter.post("/editProfile", (req, res) => {
     WHERE email = ?`,
     [profilePic, fullName, city, username],
     (err, results) => {
-      logger.debug(results);
+      logger.info("%o %o", err, results);
       if (err) {
         res.status(400).send({
           message: "Something went wrong, Please try again",
