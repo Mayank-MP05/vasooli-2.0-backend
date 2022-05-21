@@ -12,7 +12,7 @@ const requestLogger = require("../middleware/request-logger");
  * /user/login:
  *  post:
  *    tags:
- *    - "user"
+ *    - "User"
  *    summary: "Logs In user to the system give JWT Token along with User Model"
  *    description: "Returns a JWT Token,Success or Error and Message,User Model"
  *    operationId: "/user/login"
@@ -84,7 +84,7 @@ userRouter.post("/login", requestLogger, (req, res) => {
  * /user/register:
  *  post:
  *    tags:
- *    - "user"
+ *    - "User"
  *    summary: "Register new user into the system ,give JWT Token, Status"
  *    description: "Returns a JWT Token, Success or Error Message, User Model"
  *    operationId: "/user/register"
@@ -159,7 +159,7 @@ userRouter.post("/register", requestLogger, (req, res) => {
  * /user/logout/{userId}:
  *  get:
  *    tags:
- *    - "user"
+ *    - "User"
  *    summary: "Logs Out the User"
  *    description: "logout the user"
  *    operationId: "/user/logout"
@@ -186,7 +186,7 @@ userRouter.get("/logout/:id", requestLogger, (req, res) => {
  * /user/editProfile:
  *  post:
  *    tags:
- *    - "user"
+ *    - "User"
  *    summary: "Update the Profile in DB according to req body input"
  *    description: "Update the Profile in DB according to req body input"
  *    operationId: "/user/editProfile"
