@@ -1,6 +1,10 @@
 const express = require("express");
 const logger = require("../config/logger");
+
+// Middleware imports
 const requestLogger = require("../middleware/request-logger");
+const authenticate = require("../middleware/authenticate");
+
 const txnRouter = express.Router();
 
 // Database Connection Handlers
