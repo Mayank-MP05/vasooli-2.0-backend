@@ -88,8 +88,52 @@ vasooliRouter.post("/create", (req, res) => {
   );
 });
 
-vasooliRouter.get("/read", (req, res) => {
-  res.send("vasooli Route for Read");
+/**
+ * @swagger
+ * /vasooli/read/{userId}:
+ *  get:
+ *    tags:
+ *    - "Vasooli"
+ *    summary: "Get all vasooli for a user"
+ *    description: "Returns array of vasoolis along with success and error flags"
+ *    operationId: "/vasooli/read/{userId}"
+ *    produces:
+ *    - "application/json"
+ *    parameters:
+ *    - in: "path"
+ *      name: "userId"
+ *      example: 4
+ *      description: "Vasooli Read Payload"
+ *      required: true
+ *    responses:
+ *      "200":
+ *        description: "Read all Vasooli by userId success!!"
+ */
+vasooliRouter.get("/read/:userId", (req, res) => {
+  const { userId: userIdX } = req.params;
+  const userId = parseInt(userIdX);
+
+  vasooliDB.query(
+    "SELECT * FROM vasoolis WHERE userId = ? OR requestedTo = ?",
+    [userId, userId],
+    (err, results) => {
+      if (err) {
+        res.status(500).send({
+          message: "Error in reading vasooli records",
+          success: false,
+          error: true,
+          ...err,
+        });
+      } else {
+        res.status(200).send({
+          message: "All vasooli record fetch successful!!",
+          success: true,
+          error: false,
+          vasooliArr: results,
+        });
+      }
+    }
+  );
 });
 
 vasooliRouter.put("/update/:id", (req, res) => {
