@@ -244,8 +244,53 @@ vasooliRouter.put("/update/:vasooliId", (req, res) => {
   );
 });
 
-vasooliRouter.delete("/delete/:id", (req, res) => {
-  res.send("vasooli Route for Delete by id");
+/**
+ * @swagger
+ * /vasooli/delete/{vasooliId}:
+ *  delete:
+ *    tags:
+ *    - "Vasooli"
+ *    summary: "Delete a specific vasooli from db"
+ *    description: "Returns deleted vasooliId along with success and error flags"
+ *    operationId: "/vasooli/delete/{vasooliId}"
+ *    produces:
+ *    - "application/json"
+ *    parameters:
+ *    - in: "path"
+ *      name: "vasooliId"
+ *      example: 2
+ *      description: "Vasooli Delete Payload"
+ *      required: true
+ *    responses:
+ *      "200":
+ *        description: "Delete Single Vasooli Done!!"
+ */
+vasooliRouter.delete("/delete/:vasooliId", (req, res) => {
+  const { vasooliId: vasooliIdX } = req.params;
+  const vasooliId = parseInt(vasooliIdX);
+
+  vasooliDB.query(
+    "DELETE FROM vasoolis WHERE vasooliId = ?",
+    [vasooliId],
+    (err, results) => {
+      logger.info("%o %o", err, results);
+      if (err) {
+        res.status(500).send({
+          message: "Error in deleting vasooli record",
+          success: false,
+          error: true,
+          ...err,
+        });
+      } else {
+        res.status(200).send({
+          message: "Vasooli record deleted successfully",
+          success: true,
+          error: false,
+          ...results,
+        });
+      }
+    }
+  );
 });
 
 module.exports = vasooliRouter;
