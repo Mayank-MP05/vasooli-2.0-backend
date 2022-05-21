@@ -214,12 +214,53 @@ txnRouter.put("/update/:txnId", (req, res) => {
   );
 });
 
-txnRouter.put("/update/:id", (req, res) => {
-  res.send("transaction Route for update by id");
-});
+/**
+ * @swagger
+ * /transactions/delete/{txnId}:
+ *  delete:
+ *    tags:
+ *    - "Transactions"
+ *    summary: "Delete a specific transaction from db"
+ *    description: "Returns deleted txnId along with success and error flags"
+ *    operationId: "/transactions/delete/{txnId}"
+ *    produces:
+ *    - "application/json"
+ *    parameters:
+ *    - in: "path"
+ *      name: "txnId"
+ *      example: 2
+ *      description: "Txn Delete Payload"
+ *      required: true
+ *    responses:
+ *      "200":
+ *        description: "Delete Single Txn success!!"
+ */
+txnRouter.delete("/delete/:txnId", (req, res) => {
+  const { txnId: txnIdX } = req.params;
+  const txnId = parseInt(txnIdX);
 
-txnRouter.delete("/delete/:id", (req, res) => {
-  res.send("transaction Route for delete by id");
+  vasooliDB.query(
+    "DELETE FROM transactions WHERE txnId = ?",
+    [txnId],
+    (err, results) => {
+      logger.info("%o %o", err, results);
+      if (err) {
+        res.status(500).send({
+          message: "Error in deleting transaction",
+          success: false,
+          error: true,
+          ...err,
+        });
+      } else {
+        res.status(200).send({
+          message: "Transaction deleted successfully",
+          success: true,
+          error: false,
+          ...results,
+        });
+      }
+    }
+  );
 });
 
 module.exports = txnRouter;
