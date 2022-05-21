@@ -1,5 +1,6 @@
 const express = require("express");
 const logger = require("../config/logger");
+const requestLogger = require("../middleware/request-logger");
 const vasooliRouter = express.Router();
 
 vasooliRouter.post("/create", (req, res) => {
@@ -10,10 +11,6 @@ vasooliRouter.post("/create", (req, res) => {
 
 vasooliRouter.get("/read", (req, res) => {
   res.send("vasooli Route for Read");
-});
-
-vasooliRouter.get("/read/:id", (req, res) => {
-  res.send("vasooli Route for Read by id");
 });
 
 vasooliRouter.put("/update/:id", (req, res) => {
