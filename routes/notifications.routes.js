@@ -29,13 +29,12 @@ notifRouter.get("/read/:userId", (req, res) => {
   const { body } = req;
   const { userId: userIdX } = req.params;
   const userId = parseInt(userIdX);
-  mongoDBConnector((client) => {
-    const database = client.db("vasooliNotif");
-    const notifications = database.collection("notifications");
+  mongoDBConnector((client, notifications) => {
     notifications
       .find({
         $or: [{ priority: 2 }, { $and: [{ priority: 1 }, { userId: userId }] }],
       })
+      .sort({ timestamp: -1 })
       .toArray(async (err, results) => {
         if (err) {
           res.status(500).json({
