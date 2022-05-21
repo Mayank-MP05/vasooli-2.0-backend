@@ -19,6 +19,9 @@ const vasooliDB = require("../config/mysql-connect");
  *    produces:
  *    - "application/json"
  *    parameters:
+ *    - in: "header"
+ *      name: "authorization"
+ *      example: "bearar xyz"
  *    - in: "body"
  *      name: "body"
  *      description: "Txn Create Payload"
@@ -101,6 +104,9 @@ txnRouter.post("/create", requestLogger, (req, res) => {
  *    produces:
  *    - "application/json"
  *    parameters:
+ *    - in: "header"
+ *      name: "authorization"
+ *      example: "bearar xyz"
  *    - in: "path"
  *      name: "userId"
  *      example: 4
@@ -150,6 +156,9 @@ txnRouter.get("/read/:userId", (req, res) => {
  *    produces:
  *    - "application/json"
  *    parameters:
+ *    - in: "header"
+ *      name: "authorization"
+ *      example: "bearar xyz"
  *    - in: "path"
  *      name: "txnId"
  *      example: 2
@@ -226,6 +235,9 @@ txnRouter.put("/update/:txnId", (req, res) => {
  *    produces:
  *    - "application/json"
  *    parameters:
+ *    - in: "header"
+ *      name: "authorization"
+ *      example: "bearar xyz"
  *    - in: "path"
  *      name: "txnId"
  *      example: 2

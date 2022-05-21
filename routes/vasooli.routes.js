@@ -1,9 +1,14 @@
 const express = require("express");
 const logger = require("../config/logger");
-const requestLogger = require("../middleware/request-logger");
 const vasooliRouter = express.Router();
 const vasooliDB = require("../config/mysql-connect");
+
+// Services Imports
 const createNotification = require("../services/notification.service");
+
+// Middlewares Imports
+const requestLogger = require("../middleware/request-logger");
+const authenticate = require("../middleware/authenticate");
 
 /**
  * @swagger
@@ -17,6 +22,9 @@ const createNotification = require("../services/notification.service");
  *    produces:
  *    - "application/json"
  *    parameters:
+ *    - in: "header"
+ *      name: "authorization"
+ *      example: "bearar xyz"
  *    - in: "body"
  *      name: "body"
  *      description: "Vasooli Create Payload"
@@ -46,7 +54,7 @@ const createNotification = require("../services/notification.service");
  *      "200":
  *        description: "Vasooli record added successfully"
  */
-vasooliRouter.post("/create", (req, res) => {
+vasooliRouter.post("/create", requestLogger, authenticate, (req, res) => {
   const { body } = req;
   const { userId, requestedTo, amount, category, date, description } = body;
   vasooliDB.query(
@@ -109,6 +117,9 @@ vasooliRouter.post("/create", (req, res) => {
  *    produces:
  *    - "application/json"
  *    parameters:
+ *    - in: "header"
+ *      name: "authorization"
+ *      example: "bearar xyz"
  *    - in: "path"
  *      name: "userId"
  *      example: 4
@@ -157,6 +168,9 @@ vasooliRouter.get("/read/:userId", (req, res) => {
  *    produces:
  *    - "application/json"
  *    parameters:
+ *    - in: "header"
+ *      name: "authorization"
+ *      example: "bearar xyz"
  *    - in: "path"
  *      name: "vasooliId"
  *      example: 2
@@ -295,6 +309,9 @@ vasooliRouter.put("/update/:vasooliId", (req, res) => {
  *    produces:
  *    - "application/json"
  *    parameters:
+ *    - in: "header"
+ *      name: "authorization"
+ *      example: "bearar xyz"
  *    - in: "path"
  *      name: "vasooliId"
  *      example: 2

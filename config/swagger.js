@@ -2,20 +2,32 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerJsDoc = require("swagger-jsdoc");
 
 const applySwaggerUI = (app) => {
-  // Extended: https://swagger.io/specification/#infoObject
   const swaggerOptions = {
     swaggerDefinition: {
       info: {
-        version: "1.0.0",
-        title: "Vasooli API",
+        version: "2.4.0",
+        title: "Vasooli API Docs",
         description: "Vasooli - Money Manager API Docs",
         contact: {
           name: "mayank",
         },
         servers: ["http://localhost:8000"],
       },
+      components: {
+        securitySchemes: {
+          bearerAuth: {
+            type: "http",
+            scheme: "bearer",
+            bearerFormat: "JWT",
+          },
+        },
+      },
+      security: [
+        {
+          bearerAuth: [],
+        },
+      ],
     },
-    // ['.routes/*.js']
     apis: ["server.js", "./routes/*.js"],
   };
 
