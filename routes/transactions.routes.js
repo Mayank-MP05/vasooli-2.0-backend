@@ -89,8 +89,53 @@ txnRouter.post("/create", requestLogger, (req, res) => {
   );
 });
 
-txnRouter.get("/read", (req, res) => {
-  res.send("Transaction Route for read");
+/**
+ * @swagger
+ * /transactions/read/{userId}:
+ *  get:
+ *    tags:
+ *    - "Transactions"
+ *    summary: "Get all transactions for a user"
+ *    description: "Returns array of transactions along with success and error flags"
+ *    operationId: "/transactions/read/{userId}"
+ *    produces:
+ *    - "application/json"
+ *    parameters:
+ *    - in: "path"
+ *      name: "userId"
+ *      example: 4
+ *      description: "Txn Read Payload"
+ *      required: true
+ *    responses:
+ *      "200":
+ *        description: "Read all txn by userId success!!"
+ */
+txnRouter.get("/read/:userId", (req, res) => {
+  const { userId: userIdX } = req.params;
+  const userId = parseInt(userIdX);
+
+  vasooliDB.query(
+    "SELECT * FROM transactions WHERE userId = ?",
+    [userId],
+    (err, results) => {
+      logger.info("%o %o", err, results);
+      if (err) {
+        res.status(500).send({
+          message: "Error in reading transactions",
+          success: false,
+          error: true,
+          ...err,
+        });
+      } else {
+        res.status(200).send({
+          message: "fetch transactions success!!",
+          success: true,
+          error: false,
+          txnArr: results,
+        });
+      }
+    }
+  );
 });
 
 txnRouter.get("/read/:id", (req, res) => {
