@@ -5,7 +5,7 @@
 
 `/user/register`
 
-`/user/logout`
+`/user/logout/:userId`
 
 `/user/editProfile/:id`
 ### Transactions CRUD 
