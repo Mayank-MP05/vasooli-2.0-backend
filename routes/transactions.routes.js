@@ -138,8 +138,80 @@ txnRouter.get("/read/:userId", (req, res) => {
   );
 });
 
-txnRouter.get("/read/:id", (req, res) => {
-  res.send("Transaction Route for read by id");
+/**
+ * @swagger
+ * /transactions/update/{txnId}:
+ *  put:
+ *    tags:
+ *    - "Transactions"
+ *    summary: "Update the particular transaction record"
+ *    description: "Returns array of updated transaction along with success and error flags"
+ *    operationId: "/transactions/update/{txnId}"
+ *    produces:
+ *    - "application/json"
+ *    parameters:
+ *    - in: "path"
+ *      name: "txnId"
+ *      example: 2
+ *      description: "Txn Id to Update"
+ *      required: true
+ *    - in: "body"
+ *      name: "body"
+ *      description: "Txn Update Payload"
+ *      required: true
+ *      schema:
+ *        type: "object"
+ *        properties:
+ *          userId:
+ *            type: "string"
+ *            example: 4
+ *          type:
+ *            type: "string"
+ *            example: "EXP"
+ *          amount:
+ *            type: "int64"
+ *            example: 100
+ *          category:
+ *            type: "int64"
+ *            example: 0
+ *          date:
+ *            type: "date"
+ *            example: 	"2022-5-21 10:50:19"
+ *          description:
+ *            type: "string"
+ *            example: "Updated Sample Txn Description"
+ *    responses:
+ *      "200":
+ *        description: "update txn by txnId success!!"
+ */
+txnRouter.put("/update/:txnId", (req, res) => {
+  const { txnId: txnIdX } = req.params;
+  const txnId = parseInt(txnIdX);
+  const { body } = req;
+  const { userId, type, amount, category, date, description } = body;
+
+  vasooliDB.query(
+    "UPDATE transactions SET  type = ?, amount = ?, category = ?, date = ?, description = ? WHERE txnId = ?",
+    [type, amount, category, date, description, txnId],
+    (err, results) => {
+      logger.info("%o %o", err, results);
+      if (err) {
+        res.status(500).send({
+          message: "Error in updating transaction",
+          success: false,
+          error: true,
+          ...err,
+        });
+      } else {
+        res.status(200).send({
+          message: "Transaction updated successfully",
+          success: true,
+          error: false,
+          ...results,
+        });
+      }
+    }
+  );
 });
 
 txnRouter.put("/update/:id", (req, res) => {
