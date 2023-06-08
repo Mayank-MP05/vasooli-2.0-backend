@@ -118,14 +118,14 @@ userRouter.post("/login", requestLogger, (req, res) => {
  */
 userRouter.post("/register", requestLogger, (req, res) => {
   const { body } = req;
-  const { username, password, fullName, city } = body;
-  const user = { username, password };
+  const { email, password, confirmPassword } = body;
+  const user = { email, password };
   const randomProfilePic = Math.floor(Math.random() * 9);
 
   //TODO: Check if user exists in DB
   vasooliDB.query(
-    "INSERT INTO users (email,password,profilePic,fullName, city) VALUES (?,?,?,?,?)",
-    [username, password, randomProfilePic, fullName, city],
+    "INSERT INTO customers (email_id,password_hash) VALUES (?,?)",
+    [email, password],
     (err, results) => {
       logger.info("%o %o", err, results);
       if (err) {
@@ -143,19 +143,16 @@ userRouter.post("/register", requestLogger, (req, res) => {
         //TODO: Send notifications as Joining
         createNotification({
           priority: 2,
-          content: `${username} has just joined vasooli money manager app!`,
+          content: `${email} has just joined vasooli money manager app!`,
           timestamp: new Date(),
         });
         res.status(200).send({
           message: "Account Successfully Created!!",
           success: true,
-          error: false,
           userId: results.insertId,
-          username,
+          username: email,
           token: accessToken,
           profilePic: randomProfilePic,
-          fullName,
-          city,
         });
       }
     }
