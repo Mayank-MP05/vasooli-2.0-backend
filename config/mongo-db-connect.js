@@ -1,8 +1,8 @@
 const { MongoClient } = require("mongodb");
 const logger = require("./logger");
 
-const uri =
-  "mongodb://localhost:27017/vasooliNotif?readPreference=primary&appname=MongoDB%20Compass&ssl=false";
+const uri = process.env.MONGO_DB_URI;
+
 const client = new MongoClient(uri);
 async function mongoDBConnector(cb) {
   try {
@@ -11,7 +11,7 @@ async function mongoDBConnector(cb) {
     const database = client.db("vasooliNotif");
     const notifications = database.collection("notifications");
     logger.info("Connection to MongoDB - SUCCESSFUL!");
-    cb(client,notifications);
+    cb(client, notifications);
   } finally {
     // await client.close();
   }
