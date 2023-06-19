@@ -27,7 +27,7 @@ const createNotification = require("../services/notification.service");
  *      schema:
  *        type: "object"
  *        properties:
- *          username:
+ *          email:
  *            type: "string"
  *            example: "one@mail.com"
  *          password:
@@ -39,42 +39,39 @@ const createNotification = require("../services/notification.service");
  */
 userRouter.post("/login", requestLogger, (req, res) => {
   const { body } = req;
-  const { username, password } = body;
-  const userForToken = { username, password };
+  const { email, password } = body;
+  const userForToken = { email, password };
 
   //TODO: Check if user exists in DB
   vasooliDB.query(
-    "SELECT * FROM users WHERE email = ?",
-    [username],
+    "SELECT * FROM customers WHERE email_id = ?",
+    [email],
     (err, results) => {
       logger.info("%o %o", err, results);
       if (err || results.length === 0) {
-        res.status(400).send({
+        res.status(200).send({
           message: "User do not exist in our system",
-          success: false,
-          error: true,
+          statusCode: 4001,
           ...err,
         });
       }
 
       //TODO: Check if password is correct
-      const [user, ...rest] = results;
-      if (user && user.password && user.password === password) {
+      const user = results[0];
+      if (user && user.password_hash && user.password_hash === password) {
         //TODO: Create JWT Token and Nullify the Password send it back
-        user.password = null;
+        user.password_hash = null;
         const accessToken = jwt.sign(userForToken, "secret");
         res.status(200).send({
           message: "Successfully Logged In",
-          success: true,
-          error: false,
-          token: accessToken,
+          statusCode: 2000,
+          authorization: accessToken,
           ...user,
         });
       } else {
-        res.status(401).send({
-          message: "Password you entered is Incorrect",
-          success: false,
-          error: true,
+        res.status(200).send({
+          message: "Password you entered is incorrect, Please try again",
+          statusCode: 2000,
         });
       }
     }
