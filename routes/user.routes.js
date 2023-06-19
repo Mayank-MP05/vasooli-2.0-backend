@@ -7,6 +7,7 @@ const notifDB = require("../config/mongo-db-connect");
 const vasooliDB = require("../config/mysql-connect");
 const requestLogger = require("../middleware/request-logger");
 const createNotification = require("../services/notification.service");
+const passwordValidations = require("../utils/validations");
 
 /**
  * @swagger
@@ -37,39 +38,38 @@ const createNotification = require("../services/notification.service");
  *      "200":
  *        description: "Login Success"
  */
-userRouter.post("/login", requestLogger, (req, res) => {
-  const { body } = req;
+userRouter.post("/login", requestLogger, (request, response) => {
+  const { body } = request;
   const { email, password } = body;
   const userForToken = { email, password };
 
   //TODO: Check if user exists in DB
   vasooliDB.query(
-    "SELECT * FROM customers WHERE email_id = ?",
+    "SELECT * FROM customers WHERE email_id = ? LIMIT 1;",
     [email],
-    (err, results) => {
-      logger.info("%o %o", err, results);
-      if (err || results.length === 0) {
-        res.status(200).send({
+    (error, customerRecords) => {
+      if (error || customerRecords.length === 0) {
+        response.status(200).send({
           message: "User do not exist in our system",
           statusCode: 4001,
-          ...err,
+          ...error,
         });
       }
 
       //TODO: Check if password is correct
-      const user = results[0];
-      if (user && user.password_hash && user.password_hash === password) {
+      const customer = customerRecords[0];
+      if (customer && customer.password_hash && customer.password_hash === password) {
         //TODO: Create JWT Token and Nullify the Password send it back
-        user.password_hash = null;
+        customer.password_hash = null;
         const accessToken = jwt.sign(userForToken, "secret");
-        res.status(200).send({
+        response.status(200).send({
           message: "Successfully Logged In",
           statusCode: 2000,
           authorization: accessToken,
-          ...user,
+          ...customer,
         });
       } else {
-        res.status(200).send({
+        response.status(200).send({
           message: "Password you entered is incorrect, Please try again",
           statusCode: 2000,
         });
@@ -97,15 +97,15 @@ userRouter.post("/login", requestLogger, (req, res) => {
  *      schema:
  *        type: "object"
  *        properties:
- *          username:
+ *          emailId:
  *            type: "string"
  *            example: "two@mail.com"
  *          password:
  *            type: "string"
  *            example: "twopass"
- *          fullName:
+ *          confirmPassword:
  *            type: "string"
- *            example: "User Two"
+ *            example: "twopass"
  *          city:
  *            type: "string"
  *            example: "pune"
@@ -113,11 +113,28 @@ userRouter.post("/login", requestLogger, (req, res) => {
  *      "200":
  *        description: "SignUp Success"
  */
-userRouter.post("/register", requestLogger, (req, res) => {
-  const { body } = req;
+userRouter.post("/register", requestLogger, (request, response) => {
+  const { body } = request;
   const { email, password, confirmPassword } = body;
-  const user = { email, password };
+  const customer = { email, password };
   const randomProfilePic = Math.floor(Math.random() * 9);
+
+  if (password !== confirmPassword) {
+    response.status(400).send({
+      message: "Password and Confirm Password do not match",
+      statusCode: 4002,
+    });
+  }
+
+  if (password === confirmPassword) {
+    // Check for password strength by rules
+    const passwordStrengthCheckResults = passwordValidations(password);
+    if (passwordStrengthCheckResults.statusCode !== 2000) {
+      response.status(400).send({
+        ...passwordStrengthCheckResults,
+      });
+    }
+  }
 
   //TODO: Check if user exists in DB
   vasooliDB.query(
@@ -126,29 +143,28 @@ userRouter.post("/register", requestLogger, (req, res) => {
     (err, results) => {
       logger.info("%o %o", err, results);
       if (err) {
-        res.status(400).send({
+        response.status(400).send({
           message: "Something went wrong, Please try again",
-          success: false,
-          error: true,
+          statusCode: 4000,
           ...err,
         });
       }
 
       //TODO: Create JWT Token and Nullify the Password send it back
       if (results && results.insertId) {
-        const accessToken = jwt.sign(user, "secret");
+        const accessToken = jwt.sign(customer, "secret");
         //TODO: Send notifications as Joining
         createNotification({
           priority: 2,
           content: `${email} has just joined vasooli money manager app!`,
           timestamp: new Date(),
         });
-        res.status(200).send({
+        response.status(200).send({
           message: "Account Successfully Created!!",
-          success: true,
-          userId: results.insertId,
-          username: email,
-          token: accessToken,
+          statusCode: 2000,
+          emailId: email,
+          customerId: results.emailId,
+          authorization: accessToken,
           profilePic: randomProfilePic,
         });
       }
