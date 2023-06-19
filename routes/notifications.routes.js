@@ -30,7 +30,7 @@ notifRouter.get("/read/:userId", (req, res) => {
   const { body } = req;
   const { userId: userIdX } = req.params;
   const userId = parseInt(userIdX);
-  mongoDBConnector((client, notifications) => {
+  mongoDBConnector.connect((client, notifications) => {
     notifications
       .find({
         $or: [{ priority: 2 }, { $and: [{ priority: 1 }, { userId: userId }] }],
