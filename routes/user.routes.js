@@ -68,6 +68,7 @@ userRouter.post("/login", requestLogger, (request, response) => {
           authorization: accessToken,
           ...customer,
           password_hash: undefined,
+          username: customer.first_name,
         });
       } else {
         response.status(200).send({
@@ -167,6 +168,7 @@ userRouter.post("/register", requestLogger, (request, response) => {
           customerId: results.emailId,
           authorization: accessToken,
           profilePic: randomProfilePic,
+          username: results.first_name,
         });
       }
     }
@@ -236,33 +238,30 @@ userRouter.get("/logout/:id", requestLogger, (req, res) => {
  *      "200":
  *        description: "UpdateProfile Success"
  */
-userRouter.post("/editProfile", requestLogger, (req, res) => {
-  const { body } = req;
+userRouter.post("/edit-profile", requestLogger, (request, response) => {
+  const { body } = request;
   const { username, fullName, city, profilePic } = body;
 
   //TODO: DB Query to update the record
   vasooliDB.query(
-    `UPDATE users
+    `UPDATE customers
     SET profilePic = ?,
     fullName = ?,
     city = ?
     WHERE email = ?`,
     [profilePic, fullName, city, username],
     (err, results) => {
-      logger.info("%o %o", err, results);
       if (err) {
-        res.status(400).send({
+        response.status(400).send({
           message: "Something went wrong, Please try again",
-          success: false,
-          error: true,
+          statusCode: 4000,
           ...err,
         });
       }
 
-      res.status(200).send({
+      response.status(200).send({
         message: "Profile details updated successfully!!",
-        success: true,
-        error: false,
+        statusCode: 2000,
         ...results,
       });
     }
