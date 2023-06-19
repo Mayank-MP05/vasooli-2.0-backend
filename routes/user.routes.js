@@ -67,6 +67,7 @@ userRouter.post("/login", requestLogger, (request, response) => {
           statusCode: 2000,
           authorization: accessToken,
           ...customer,
+          password_hash: undefined,
         });
       } else {
         response.status(200).send({
